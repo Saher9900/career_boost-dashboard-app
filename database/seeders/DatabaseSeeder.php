@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\Hash;
 
 class DatabaseSeeder extends Seeder
 {
@@ -17,19 +18,25 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->count(10)->create();
+        // User::factory()->count(10)->create();
 
-        if (! User::query()->where('role', 'company_owner')->exists()) {
-            User::factory()->count(5)->create([
-                'role' => 'company_owner',
-            ]);
-        }
+        // if (! User::query()->where('role', 'company_owner')->exists()) {
+        //     User::factory()->count(5)->create([
+        //         'role' => 'company_owner',
+        //     ]);
+        // }
 
-        $this->call([
-            UserLastLoginSeeder::class,
-            EnsureCompanyOwnersHaveCompaniesSeeder::class,
-            JobVacancySeeder::class,
-            JobApplicationSeeder::class,
+        // $this->call([
+        //     UserLastLoginSeeder::class,
+        //     EnsureCompanyOwnersHaveCompaniesSeeder::class,
+        //     JobVacancySeeder::class,
+        //     JobApplicationSeeder::class,
+        // ]);
+        User::create([
+            'name' => 'Mohamed Saher',
+            'email' => 'mohamed@gmail.com',
+            'password' => Hash::make('123123123'),
+            'role' => 'admin'
         ]);
     }
 }
