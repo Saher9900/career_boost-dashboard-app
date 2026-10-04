@@ -1,0 +1,2 @@
+hadle view one job in my-company tap
+add dashboard to company owner
