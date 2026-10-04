@@ -51,15 +51,16 @@
 
         {{-- Categories Table --}}
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <div class="overflow-x-auto">
+            <table class="responsive-table min-w-full divide-y divide-gray-200">
+                <thead class="hidden bg-gray-50 md:table-header-group">
                     <tr>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Name
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Action
                         </th>
                     </tr>
@@ -67,10 +68,11 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($jobCategories as $jobCategory)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Name"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 {{ $jobCategory->title }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+                            <td class="mobile-actions px-6 py-4 text-sm font-medium md:whitespace-nowrap md:text-right">
 
                                 @if (request()->input('archived') === 'true')
                                     <form action="{{ route('job-categories.restore', $jobCategory->id) }}"
@@ -113,6 +115,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
 
             {{-- Laravel Native Pagination Links --}}
             <div class="px-6 py-4 border-t border-gray-200">

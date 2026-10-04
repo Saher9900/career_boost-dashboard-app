@@ -11,7 +11,7 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <p class="text-sm font-medium text-[#138a9e]">Job Vacancies</p>
                 <h2 class="mt-1 text-xl font-semibold leading-tight text-gray-800">

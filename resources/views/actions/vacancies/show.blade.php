@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex items-center justify-between gap-4">
+        <div class="flex flex-wrap items-center justify-between gap-3">
             <div>
                 <p class="text-sm font-medium text-[#138a9e]">Job Vacancies</p>
                 <h2 class="mt-1 text-xl font-semibold leading-tight text-gray-800">
@@ -41,7 +41,7 @@
             <div class="grid gap-4 p-6 md:grid-cols-2 xl:grid-cols-4 sm:p-8">
                 <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Company</p>
-                    <p class="mt-2 text-lg font-semibold text-gray-900"><a class="text-[blue]" style="border-bottom: solid blue 2px" href="{{ route('companies.show', ['company' => $jobVacancy->company->id, 'jobs' => 'true']) }}">{{ $jobVacancy->company->name }}</a></p>
+                    <p class="mt-2 text-lg font-semibold text-gray-900"><a class="border-b-2 border-[#138a9e] text-[#138a9e] hover:border-[#0e6378] hover:text-[#0e6378]" href="{{ route('companies.show', ['company' => $jobVacancy->company->id, 'jobs' => 'true']) }}">{{ $jobVacancy->company->name }}</a></p>
                 </div>
 
                 <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">

@@ -9,7 +9,7 @@
         </div>
     @endif
 
-    <div class="mt-4 flex items-center justify-between">
+    <div class="mt-4 flex flex-wrap items-center justify-between gap-4">
         <form method="POST" action="{{ route('verification.send') }}">
             @csrf
 

@@ -34,19 +34,21 @@
             </div>
         @endif
 
-        @if (auth()->user()->role === 'admin')
-            <a href="{{ route('job-vacancies.create') }}">
-                <x-primary-button class="mr-2 text-xs px-3 py-1">
-                    Add New Job Vacancy
-                </x-primary-button>
-            </a>
-        @elseif (!($companyMissing ?? false))
-            <a href="{{ route('my-job-vacancies.create') }}">
-                <x-primary-button class="mr-2 text-xs px-3 py-1">
-                    Add New Job Vacancy
-                </x-primary-button>
-            </a>
-        @endif
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+            @if (auth()->user()->role === 'admin')
+                <a href="{{ route('job-vacancies.create') }}">
+                    <x-primary-button class="mr-2 text-xs px-3 py-1">
+                        Add New Job Vacancy
+                    </x-primary-button>
+                </a>
+            @elseif (!($companyMissing ?? false))
+                <a href="{{ route('my-job-vacancies.create') }}">
+                    <x-primary-button class="mr-2 text-xs px-3 py-1">
+                        Add New Job Vacancy
+                    </x-primary-button>
+                </a>
+            @endif
+        </div>
 
 
 
@@ -69,31 +71,32 @@
 
         {{-- Categories Table --}}
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <div class="overflow-x-auto">
+            <table class="responsive-table min-w-full divide-y divide-gray-200">
+                <thead class="hidden bg-gray-50 md:table-header-group">
                     <tr>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Title
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Type
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Salary
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Company
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Category
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Actions
                         </th>
                     </tr>
@@ -101,23 +104,28 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($jobVacanciesPaginated as $jobVacancy)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Title"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 <a
                                     href="{{ route($vacancyDetailRoute, $jobVacancy) }}">{{ $jobVacancy->title }}</a>{{ $jobVacancy->id }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Type"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 {{ $jobVacancy->type }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Salary"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 {{ $jobVacancy->salary }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Company"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 {{ $jobVacancy->company?->name }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Category"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 {{ $jobVacancy->jobCategory?->title }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+                            <td class="mobile-actions px-6 py-4 text-sm font-medium md:whitespace-nowrap md:text-right">
 
                                 @if (request()->input('archived') === 'true')
                                     <form action="{{ route($vacancyRestoreRoute, $jobVacancy->id) }}" method="POST"
@@ -139,11 +147,9 @@
                                         style="display: inline">
                                         @csrf
                                         @method('delete')
-                                        <button type="submit">
-                                            <x-danger-button class="text-xs px-3 py-1">
-                                                Archive
-                                            </x-danger-button>
-                                        </button>
+                                        <x-danger-button class="text-xs px-3 py-1">
+                                            Archive
+                                        </x-danger-button>
                                     </form>
                                 @endif
 
@@ -153,13 +159,14 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">
+                            <td colspan="6" class="px-6 py-4 text-center text-sm text-gray-500">
                                 No categories found.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            </div>
 
             {{-- Laravel Native Pagination Links --}}
             <div class="px-6 py-4 border-t border-gray-200">

@@ -51,7 +51,7 @@
 
         <section aria-label="Most applied jobs">
             <div class="overflow-hidden rounded-lg border border-gray-200 bg-white shadow-sm">
-                <div class="flex items-center justify-between border-b border-gray-200 px-5 py-4 sm:px-6">
+                <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gray-200 px-5 py-4 sm:px-6">
                     <div>
                         <h2 class="text-base font-semibold text-gray-900">Most applied jobs</h2>
                         <p class="mt-1 text-sm text-gray-500">Top vacancies by application volume with reach and conversion details</p>
@@ -60,8 +60,8 @@
                 </div>
 
                 <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-gray-200 text-left">
-                        <thead class="bg-gray-50">
+                    <table class="responsive-table min-w-full divide-y divide-gray-200 text-left">
+                        <thead class="hidden bg-gray-50 md:table-header-group">
                             <tr>
                                 <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500 sm:px-6">Job</th>
                                 <th scope="col" class="px-5 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500 sm:px-6">Company</th>
@@ -75,15 +75,15 @@
                         <tbody class="divide-y divide-gray-100">
                             @forelse ($mostAppliedJobs as $job)
                                 <tr class="transition hover:bg-gray-50">
-                                    <td class="max-w-56 px-5 py-4 text-sm font-medium text-gray-900 sm:px-6">
+                                    <td data-label="Job" class="px-5 py-4 text-sm font-medium text-gray-900 sm:px-6 md:max-w-56">
                                         <a href="{{ route($jobVacancyRoute, $job) }}" class="hover:text-[#0e6378]">{{ $job->title }}</a>
                                     </td>
-                                    <td class="px-5 py-4 text-sm text-gray-600 sm:px-6">{{ $job->company?->name ?? 'Company unavailable' }}</td>
-                                    <td class="px-5 py-4 text-sm text-gray-600 sm:px-6">{{ ucfirst(str_replace('_', ' ', $job->type)) }}</td>
-                                    <td class="px-5 py-4 text-right text-sm tabular-nums text-gray-600 sm:px-6">{{ $job->salary }}</td>
-                                    <td class="px-5 py-4 text-right text-sm tabular-nums text-gray-600 sm:px-6">{{ number_format($job->view_count) }}</td>
-                                    <td class="px-5 py-4 text-right text-sm font-semibold tabular-nums text-gray-900 sm:px-6">{{ number_format($job->total_applications) }}</td>
-                                    <td class="px-5 py-4 text-right sm:px-6">
+                                    <td data-label="Company" class="px-5 py-4 text-sm text-gray-600 sm:px-6">{{ $job->company?->name ?? 'Company unavailable' }}</td>
+                                    <td data-label="Type" class="px-5 py-4 text-sm text-gray-600 sm:px-6">{{ ucfirst(str_replace('_', ' ', $job->type)) }}</td>
+                                    <td data-label="Salary" class="px-5 py-4 text-sm tabular-nums text-gray-600 sm:px-6 md:text-right">{{ $job->salary }}</td>
+                                    <td data-label="Views" class="px-5 py-4 text-sm tabular-nums text-gray-600 sm:px-6 md:text-right">{{ number_format($job->view_count) }}</td>
+                                    <td data-label="Applications" class="px-5 py-4 text-sm font-semibold tabular-nums text-gray-900 sm:px-6 md:text-right">{{ number_format($job->total_applications) }}</td>
+                                    <td data-label="Conversion rate" class="px-5 py-4 sm:px-6 md:text-right">
                                         @if ($job->conversionRate === null)
                                             <span class="inline-flex rounded-md bg-gray-100 px-2.5 py-1 text-sm font-medium text-gray-500">N/A</span>
                                         @else

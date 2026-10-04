@@ -41,8 +41,9 @@
         </div>
 
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <div class="overflow-x-auto">
+            <table class="responsive-table min-w-full divide-y divide-gray-200">
+                <thead class="hidden bg-gray-50 md:table-header-group">
                     <tr>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Applicant</th>
                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vacancy</th>
@@ -54,15 +55,16 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($jobApplicationsPaginated as $application)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Applicant"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 <a href="{{ route('job-applications.show', $application->id) }}" class="text-[#138a9e] hover:text-[#0e6378]">
                                     {{ $application->user?->name ?? 'Applicant' }}
                                 </a>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <td data-label="Vacancy" class="px-6 py-4 text-sm text-gray-600 md:whitespace-nowrap">
                                 {{ $application->jobVacancy?->title ?? 'N/A' }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <td data-label="Status" class="px-6 py-4 text-sm text-gray-600 md:whitespace-nowrap">
                                 <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold
                                     @if ($application->status === 'accepted') bg-green-100 text-green-800
                                     @elseif ($application->status === 'rejected') bg-red-100 text-red-800
@@ -70,10 +72,10 @@
                                     {{ ucfirst($application->status) }}
                                 </span>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
+                            <td data-label="AI Score" class="px-6 py-4 text-sm text-gray-600 md:whitespace-nowrap">
                                 {{ $application->ai_score }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                            <td class="mobile-actions px-6 py-4 text-sm font-medium md:whitespace-nowrap md:text-right">
                                 @if (request()->input('archived') === 'true')
                                     <form action="{{ route('job-applications.restore', $application->id) }}" method="POST" class="inline-block">
                                         @csrf
@@ -92,11 +94,9 @@
                                     <form action="{{ route('job-applications.destroy', $application->id) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('delete')
-                                        <button type="submit">
-                                            <x-danger-button class="text-xs px-3 py-1">
-                                                Archive
-                                            </x-danger-button>
-                                        </button>
+                                        <x-danger-button class="text-xs px-3 py-1">
+                                            Archive
+                                        </x-danger-button>
                                     </form>
                                 @endif
                             </td>
@@ -110,6 +110,7 @@
                     @endforelse
                 </tbody>
             </table>
+            </div>
 
             <div class="px-6 py-4 border-t border-gray-200">
                 <div class="app-pagination">

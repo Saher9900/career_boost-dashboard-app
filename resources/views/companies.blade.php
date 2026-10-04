@@ -17,11 +17,13 @@
             </div>
         @endif
 
-        <a href="{{ route('companies.create') }}">
-            <x-primary-button class="mr-2 text-xs px-3 py-1">
-                Add New Company 
-            </x-primary-button>
-        </a>
+        <div class="mb-2 flex flex-wrap items-center gap-2">
+            <a href="{{ route('companies.create') }}">
+                <x-primary-button class="mr-2 text-xs px-3 py-1">
+                    Add New Company
+                </x-primary-button>
+            </a>
+        </div>
 
         @php($showingArchived = request()->query('archived') === 'true')
         <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
@@ -41,19 +43,20 @@
 
         {{-- Categories Table --}}
         <div class="bg-white shadow-sm rounded-lg overflow-hidden">
-            <table class="min-w-full divide-y divide-gray-200">
-                <thead class="bg-gray-50">
+            <div class="overflow-x-auto">
+            <table class="responsive-table min-w-full divide-y divide-gray-200">
+                <thead class="hidden bg-gray-50 md:table-header-group">
                     <tr>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Name
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-4/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Industry
                         </th>
                         <th scope="col"
-                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/5">
+                            class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                             Action
                         </th>
                     </tr>
@@ -61,14 +64,16 @@
                 <tbody class="bg-white divide-y divide-gray-200">
                     @forelse ($companiesPaginated as $company)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Name"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 <a
                                     href="{{ route('companies.show', ['company' => $company->id, 'jobs' => 'true']) }}">{{ $company->name }}</a>
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                            <td data-label="Industry"
+                                class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 {{ $company->industry }}
                             </td>
-                            <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
+                            <td class="mobile-actions px-6 py-4 text-sm font-medium md:whitespace-nowrap md:text-right">
 
                                 @if (request()->input('archived') === 'true')
                                     <form action="{{ route('companies.restore', $company->id) }}" method="POST"
@@ -104,13 +109,14 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">
+                            <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">
                                 No categories found.
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+            </div>
 
             {{-- Laravel Native Pagination Links --}}
             <div class="px-6 py-4 border-t border-gray-200">

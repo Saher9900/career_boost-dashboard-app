@@ -52,8 +52,8 @@
 
         <div class="overflow-hidden rounded-lg bg-white shadow-sm">
             <div class="overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gray-50">
+                <table class="responsive-table min-w-full divide-y divide-gray-200">
+                    <thead class="hidden bg-gray-50 md:table-header-group">
                         <tr>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Name</th>
                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium uppercase tracking-wider text-gray-500">Email</th>
@@ -64,18 +64,19 @@
                     <tbody class="divide-y divide-gray-200 bg-white">
                         @forelse ($usersPaginated as $user)
                             <tr class="hover:bg-gray-50">
-                                <td class="whitespace-nowrap px-6 py-4 text-sm font-medium text-gray-900">
+                                <td data-label="Name"
+                                    class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                     @if ($showingArchived)
                                         {{ $user->name }}
                                     @else
                                         <a href="{{ route('users.show', $user) }}" class="hover:text-[#0e6378]">{{ $user->name }}</a>
                                     @endif
                                 </td>
-                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600">{{ $user->email }}</td>
-                                <td class="whitespace-nowrap px-6 py-4 text-sm text-gray-600">
+                                <td data-label="Email" class="px-6 py-4 text-sm text-gray-600 md:whitespace-nowrap">{{ $user->email }}</td>
+                                <td data-label="Role" class="px-6 py-4 text-sm text-gray-600 md:whitespace-nowrap">
                                     {{ ucfirst(str_replace('_', ' ', $user->role)) }}
                                 </td>
-                                <td class="whitespace-nowrap px-6 py-4 text-right text-sm font-medium">
+                                <td class="mobile-actions px-6 py-4 text-sm font-medium md:whitespace-nowrap md:text-right">
                                     @if ($showingArchived)
                                         <form action="{{ route('users.restore', $user->id) }}" method="POST" class="inline-block">
                                             @csrf

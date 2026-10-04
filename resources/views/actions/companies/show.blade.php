@@ -76,8 +76,8 @@
                             </div>
 
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 text-left">
-                                    <thead class="bg-gray-50">
+                                <table class="responsive-table min-w-full divide-y divide-gray-200 text-left">
+                                    <thead class="hidden bg-gray-50 md:table-header-group">
                                         <tr>
                                             <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Title</th>
                                             <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Salary</th>
@@ -89,10 +89,10 @@
                                     <tbody class="divide-y divide-gray-200 bg-white">
                                         @foreach ($company->jobVacancies as $job)
                                             <tr class="hover:bg-gray-50">
-                                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $job->title }}</td>
-                                                <td class="px-4 py-3 text-sm text-gray-600">{{ $job->salary }}</td>
-                                                <td class="px-4 py-3 text-sm text-gray-600">{{ $job->type }}</td>
-                                                <td class="px-4 py-3 text-sm">
+                                                <td data-label="Title" class="px-4 py-3 text-sm font-medium text-gray-900">{{ $job->title }}</td>
+                                                <td data-label="Salary" class="px-4 py-3 text-sm text-gray-600">{{ $job->salary }}</td>
+                                                <td data-label="Type" class="px-4 py-3 text-sm text-gray-600">{{ $job->type }}</td>
+                                                <td class="mobile-actions px-4 py-3 text-sm">
                                                     <a href="#" class="font-medium text-[#138a9e] hover:text-[#0e6378]">view job</a>
                                                 </td>
                                             </tr>
@@ -110,8 +110,8 @@
                             </div>
 
                             <div class="overflow-x-auto">
-                                <table class="min-w-full divide-y divide-gray-200 text-left">
-                                    <thead class="bg-gray-50">
+                                <table class="responsive-table min-w-full divide-y divide-gray-200 text-left">
+                                    <thead class="hidden bg-gray-50 md:table-header-group">
                                         <tr>
                                             <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">Applicant</th>
                                             <th class="px-4 py-3 text-xs font-semibold uppercase tracking-wider text-gray-500">AI Score</th>
@@ -123,10 +123,10 @@
                                     <tbody class="divide-y divide-gray-200 bg-white">
                                         @foreach ($company->jobApplications as $job)
                                             <tr class="hover:bg-gray-50">
-                                                <td class="px-4 py-3 text-sm font-medium text-gray-900">{{ $job->user->name }}</td>
-                                                <td class="px-4 py-3 text-sm text-gray-600">{{ $job->ai_score }}</td>
-                                                <td class="px-4 py-3 text-sm text-gray-600">{{ $job->status }}</td>
-                                                <td class="px-4 py-3 text-sm">
+                                                <td data-label="Applicant" class="px-4 py-3 text-sm font-medium text-gray-900">{{ $job->user->name }}</td>
+                                                <td data-label="AI Score" class="px-4 py-3 text-sm text-gray-600">{{ $job->ai_score }}</td>
+                                                <td data-label="Status" class="px-4 py-3 text-sm text-gray-600">{{ $job->status }}</td>
+                                                <td class="mobile-actions px-4 py-3 text-sm">
                                                     <a href="#" class="font-medium text-[#138a9e] hover:text-[#0e6378]">view Application</a>
                                                 </td>
                                             </tr>

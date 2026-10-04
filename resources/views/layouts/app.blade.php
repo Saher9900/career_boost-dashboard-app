@@ -15,23 +15,29 @@
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="font-sans antialiased">
-        <div class="min-h-screen">
+        <div x-data="{ mobileNavOpen: false }"
+            @keydown.escape.window="mobileNavOpen = false"
+            @resize.window="if (window.innerWidth >= 768) mobileNavOpen = false"
+            x-effect="document.body.classList.toggle('overflow-hidden', mobileNavOpen); $refs.pageContent?.toggleAttribute('inert', mobileNavOpen)"
+            class="min-h-screen bg-gray-100">
 
-            @include('layouts.navigation')
-            
-            <div class="min-h-screen bg-gray-100 ml-[250px]">
-    
+            {{-- Mobile top bar and page heading share one sticky block --}}
+            <div class="sticky top-0 z-30 md:ml-[250px]">
+                @include('layouts.navigation')
+
                 <!-- Page Heading -->
                 @isset($header)
-                    <header class="fixed top-0 right-0 left-[250px] z-10 bg-white shadow">
-                        <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                    <header class="border-b border-gray-200 bg-white shadow-sm">
+                        <div class="max-w-7xl mx-auto py-4 px-4 sm:py-6 sm:px-6 lg:px-8">
                             {{ $header }}
                         </div>
                     </header>
                 @endisset
-    
+            </div>
+
+            <div x-ref="pageContent" class="min-h-screen md:ml-[250px]">
                 <!-- Page Content -->
-                <main class="pt-[89px]">
+                <main>
                     {{ $slot }}
                 </main>
             </div>
