@@ -1,4 +1,10 @@
 <x-guest-layout>
+    @if (session('session-expired'))
+        <div role="alert" class="mb-4 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+            {{ session('session-expired') }}
+        </div>
+    @endif
+
     <!-- Session Status -->
     <x-auth-session-status class="mb-4" :status="session('status')" />
 

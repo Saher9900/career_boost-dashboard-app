@@ -6,9 +6,7 @@ use App\Models\JobApplication;
 use App\Models\JobVacancy;
 use App\Models\User;
 use App\Policies\JobVacancyPolicy;
-use Illuminate\Auth\Events\Login;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 
@@ -49,12 +47,6 @@ class AppServiceProvider extends ServiceProvider
 
                 return $exist;
             }
-        });
-
-        Event::listen(function (Login $event) {
-            $event->user->forceFill([
-                'last_login_at' => now(),
-            ]);
         });
     }
 }
