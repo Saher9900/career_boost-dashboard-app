@@ -16,4 +16,12 @@ test('new users can register', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('dashboard', absolute: false));
+
+    $this->get(route('dashboard'))
+        ->assertOk()
+        ->assertSee('Dashboard metrics are unavailable because your account does not have a company profile yet.');
+
+    $this->get(route('my-company.show'))
+        ->assertOk()
+        ->assertSee('Set up your company');
 });

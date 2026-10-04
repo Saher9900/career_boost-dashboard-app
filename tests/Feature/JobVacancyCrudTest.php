@@ -182,3 +182,58 @@ it('runs the owner update form request and rejects updates to another company va
 
     expect($otherVacancy->fresh()->title)->toBe('Protected Vacancy');
 });
+
+it('lets a company owner archive and restore their own vacancy', function () {
+    $owner = User::factory()->create([
+        'role' => 'company_owner',
+    ]);
+    $company = Company::factory()->create([
+        'owner_id' => $owner->id,
+    ]);
+    $vacancy = JobVacancy::factory()->create([
+        'title' => 'Owner Managed Vacancy',
+        'company_id' => $company->id,
+    ]);
+
+    $this->actingAs($owner)
+        ->delete(route('my-job-vacancies.destroy', $vacancy))
+        ->assertRedirect(route('my-job-vacancies.index'))
+        ->assertSessionHas('success', 'Job vacancy archived successfully.');
+
+    expect($vacancy->fresh()->trashed())->toBeTrue();
+
+    $this->actingAs($owner)
+        ->put(route('my-job-vacancies.restore', $vacancy->id))
+        ->assertRedirect(route('my-job-vacancies.index', ['archived' => 'true']))
+        ->assertSessionHas('success', 'Job vacancy restored successfully.');
+
+    expect($vacancy->fresh()->trashed())->toBeFalse();
+});
+
+it('prevents a company owner from archiving or restoring another company vacancy', function () {
+    $owner = User::factory()->create([
+        'role' => 'company_owner',
+    ]);
+    Company::factory()->create([
+        'owner_id' => $owner->id,
+    ]);
+
+    $otherCompany = Company::factory()->create();
+    $otherVacancy = JobVacancy::factory()->create([
+        'title' => 'Protected Owner Vacancy',
+        'company_id' => $otherCompany->id,
+    ]);
+
+    $this->actingAs($owner)
+        ->delete(route('my-job-vacancies.destroy', $otherVacancy))
+        ->assertForbidden();
+
+    expect($otherVacancy->fresh()->trashed())->toBeFalse();
+
+    $otherVacancy->delete();
+
+    $this->put(route('my-job-vacancies.restore', $otherVacancy->id))
+        ->assertForbidden();
+
+    expect($otherVacancy->fresh()->trashed())->toBeTrue();
+});

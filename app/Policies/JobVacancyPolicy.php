@@ -9,6 +9,21 @@ class JobVacancyPolicy
 {
     public function updateVacancyByOwner(User $user, JobVacancy $jobVacancy): bool
     {
+        return $this->ownsVacancy($user, $jobVacancy);
+    }
+
+    public function deleteVacancyByOwner(User $user, JobVacancy $jobVacancy): bool
+    {
+        return $this->ownsVacancy($user, $jobVacancy);
+    }
+
+    public function restoreVacancyByOwner(User $user, JobVacancy $jobVacancy): bool
+    {
+        return $this->ownsVacancy($user, $jobVacancy);
+    }
+
+    private function ownsVacancy(User $user, JobVacancy $jobVacancy): bool
+    {
         return $user->role === 'company_owner'
             && $jobVacancy->company()->where('owner_id', $user->id)->exists();
     }

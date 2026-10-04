@@ -67,21 +67,60 @@ class CompanyController extends Controller
      */
     public function show(?string $id = null): View
     {
-        // $company = $this->resolveCompany($id);
-
         if ($id) {
             $company = Company::findOrFail($id);
         } else {
-            $company = Company::where('owner_id', auth()->user()->id)->first();
+            $company = Auth::user()->companies()->first();
+        }
+
+        if (! $company) {
+            if (Auth::user()->role === 'company_owner') {
+                return view('actions.companies.no-company');
+            }
+
+            abort(404);
         }
 
         return view('actions.companies.show', compact('company'));
     }
 
+    public function createOwned(): View|RedirectResponse
+    {
+        abort_unless(Auth::user()->role === 'company_owner', 403);
+
+        if (Auth::user()->companies()->exists()) {
+            return redirect()->route('my-company.show');
+        }
+
+        return view('actions.companies.create-owned');
+    }
+
+    public function storeOwned(Request $request): RedirectResponse
+    {
+        abort_unless(Auth::user()->role === 'company_owner', 403);
+
+        if (Auth::user()->companies()->exists()) {
+            return redirect()->route('my-company.show');
+        }
+
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'industry' => ['required', 'string', 'max:20'],
+            'address' => ['required', 'string'],
+            'website' => ['nullable', 'url', 'max:255'],
+        ]);
+
+        Auth::user()->companies()->create($validated);
+
+        return redirect()
+            ->route('my-company.show')
+            ->with('success', 'Company profile created successfully.');
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(?string $id = null): View
+    public function edit(?string $id = null): View|RedirectResponse
     {
         $company = $this->resolveCompany($id);
 

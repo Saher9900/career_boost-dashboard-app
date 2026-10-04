@@ -1,10 +1,11 @@
-{{-- 
-    if (auth()->user()->role === 'admin') {
-                                $jobVacanciesRoute = route('job-vacancies.edit', $jobVacancy->id);
-                            } else {
-                                $jobVacanciesRoute = route('my-job-vacancies.edit', $jobVacancy->id);
-                            }
---}}
+@php
+    $isAdmin = auth()->user()->role === 'admin';
+    $vacanciesIndexRoute = $isAdmin ? 'job-vacancies.index' : 'my-job-vacancies.index';
+    $vacancyDetailRoute = $isAdmin ? 'job-vacancies.show' : 'my-job-vacancies.edit';
+    $vacancyEditRoute = $isAdmin ? 'job-vacancies.edit' : 'my-job-vacancies.edit';
+    $vacancyDestroyRoute = $isAdmin ? 'job-vacancies.destroy' : 'my-job-vacancies.destroy';
+    $vacancyRestoreRoute = $isAdmin ? 'job-vacancies.restore' : 'my-job-vacancies.restore';
+@endphp
 
 <x-app-layout>
     <x-slot name="header">
@@ -14,6 +15,14 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        @if ($companyMissing ?? false)
+            <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="status">
+                No job vacancies are shown because your account does not have a company profile yet.
+                <a href="{{ route('my-company.create') }}" class="font-semibold underline">Create your company profile</a>
+                to manage vacancies.
+            </div>
+        @endif
+
         {{-- Success Message --}}
         @if (session('success'))
             <div x-data x-init="setTimeout(() => $el.remove(), 2000)"
@@ -31,7 +40,7 @@
                     Add New Job Vacancy
                 </x-primary-button>
             </a>
-        @else
+        @elseif (!($companyMissing ?? false))
             <a href="{{ route('my-job-vacancies.create') }}">
                 <x-primary-button class="mr-2 text-xs px-3 py-1">
                     Add New Job Vacancy
@@ -45,12 +54,12 @@
         <div class="mb-5 flex flex-wrap items-center justify-between gap-3">
             <p class="text-sm text-gray-500">Manage active and archived job vacancies</p>
             <nav aria-label="Category status" class="inline-flex rounded-lg border border-gray-200 bg-gray-100 p-1">
-                <a href="{{ route('job-vacancies.index') }}"
+                <a href="{{ route($vacanciesIndexRoute) }}"
                     @if (!$showingArchived) aria-current="page" @endif
                     class="rounded-md px-4 py-2 text-sm font-medium transition {{ !$showingArchived ? 'bg-white text-[#0e6378] shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
                     Active
                 </a>
-                <a href="{{ route('job-vacancies.index', ['archived' => 'true']) }}"
+                <a href="{{ route($vacanciesIndexRoute, ['archived' => 'true']) }}"
                     @if ($showingArchived) aria-current="page" @endif
                     class="rounded-md px-4 py-2 text-sm font-medium transition {{ $showingArchived ? 'bg-white text-[#0e6378] shadow-sm' : 'text-gray-600 hover:text-gray-900' }}">
                     Archived
@@ -94,7 +103,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 <a
-                                    href="{{ route('job-vacancies.show', ['job_vacancy' => $jobVacancy->id]) }}">{{ $jobVacancy->title }}</a>{{ $jobVacancy->id }}
+                                    href="{{ route($vacancyDetailRoute, $jobVacancy) }}">{{ $jobVacancy->title }}</a>{{ $jobVacancy->id }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
                                 {{ $jobVacancy->type }}
@@ -111,7 +120,7 @@
                             <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
 
                                 @if (request()->input('archived') === 'true')
-                                    <form action="{{ route('job-vacancies.restore', $jobVacancy->id) }}" method="POST"
+                                    <form action="{{ route($vacancyRestoreRoute, $jobVacancy->id) }}" method="POST"
                                         style="display: inline">
                                         @csrf
                                         @method('PUT')
@@ -120,21 +129,13 @@
                                         </x-secondary-button>
                                     </form>
                                 @else
-                                    @if (auth()->user()->role === 'admin')
-                                        <a href="{{ route('job-vacancies.edit', $jobVacancy->id) }}">
-                                            <x-primary-button class="mr-2 text-xs px-3 py-1">
-                                                Edit
-                                            </x-primary-button>
-                                        </a>
-                                    @else
-                                        <a href="{{ route('my-job-vacancies.edit', $jobVacancy->id) }}">
-                                            <x-primary-button class="mr-2 text-xs px-3 py-1">
-                                                Edit
-                                            </x-primary-button>
-                                        </a>
-                                    @endif
+                                    <a href="{{ route($vacancyEditRoute, $jobVacancy->id) }}">
+                                        <x-primary-button class="mr-2 text-xs px-3 py-1">
+                                            Edit
+                                        </x-primary-button>
+                                    </a>
 
-                                    <form action="{{ route('job-vacancies.destroy', $jobVacancy->id) }}" method="POST"
+                                    <form action="{{ route($vacancyDestroyRoute, $jobVacancy->id) }}" method="POST"
                                         style="display: inline">
                                         @csrf
                                         @method('delete')

@@ -35,9 +35,14 @@ class AppServiceProvider extends ServiceProvider
             if ($user->role === 'admin') {
                 return true;
             } else {
-                $companyId = Auth::user()->companies()->first()->id;
-                $applicationIds = JobApplication::whereHas('jobVacancy', function ($vacancy) use ($companyId) {
-                    return $vacancy->where('company_id', $companyId);
+                $companyId = Auth::user()->companies()->value('id');
+
+                if ($companyId === null) {
+                    return false;
+                }
+
+                $applicationIds = JobApplication::withTrashed()->whereHas('jobVacancy', function ($vacancy) use ($companyId) {
+                    return $vacancy->withTrashed()->where('company_id', $companyId);
                 })->pluck('id');
 
                 $exist = $applicationIds->contains($applicationId);

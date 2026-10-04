@@ -1,3 +1,7 @@
+@php
+    $jobVacancyRoute = auth()->user()->role === 'admin' ? 'job-vacancies.show' : 'my-job-vacancies.edit';
+@endphp
+
 <x-app-layout>
     <x-slot name="header">
         <div class="flex flex-wrap items-end justify-between gap-3">
@@ -10,6 +14,14 @@
     </x-slot>
 
     <div class="mx-auto max-w-7xl space-y-8 px-4 py-7 sm:px-6 lg:px-8">
+        @if ($companyMissing ?? false)
+            <div class="rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="status">
+                Dashboard metrics are unavailable because your account does not have a company profile yet.
+                <a href="{{ route('my-company.create') }}" class="font-semibold underline">Create your company profile</a>
+                to view company activity.
+            </div>
+        @endif
+
         <section aria-label="Overview metrics">
             <div class="mb-4 flex items-end justify-between gap-3">
                 <div>
@@ -64,7 +76,7 @@
                             @forelse ($mostAppliedJobs as $job)
                                 <tr class="transition hover:bg-gray-50">
                                     <td class="max-w-56 px-5 py-4 text-sm font-medium text-gray-900 sm:px-6">
-                                        <a href="{{ route('job-vacancies.show', $job) }}" class="hover:text-[#0e6378]">{{ $job->title }}</a>
+                                        <a href="{{ route($jobVacancyRoute, $job) }}" class="hover:text-[#0e6378]">{{ $job->title }}</a>
                                     </td>
                                     <td class="px-5 py-4 text-sm text-gray-600 sm:px-6">{{ $job->company?->name ?? 'Company unavailable' }}</td>
                                     <td class="px-5 py-4 text-sm text-gray-600 sm:px-6">{{ ucfirst(str_replace('_', ' ', $job->type)) }}</td>

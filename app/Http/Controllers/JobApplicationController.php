@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
 use App\Models\JobApplication;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -15,17 +14,25 @@ class JobApplicationController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
-
+        $companyMissing = false;
         if (Auth::user()->role === 'admin') {
             $query = JobApplication::with(['user', 'resume', 'jobVacancy.company'])->latest();
         } else {
-            $companyId = Company::where('owner_id', Auth::user()->id)->first()->id;
-            $query = JobApplication::with(['user', 'resume', 'jobVacancy.company'])
-                ->whereHas('jobVacancy', function ($vacancy) use ($companyId) {
-                    return $vacancy->where('company_id', $companyId);
-                })->latest();
+            $company = Auth::user()->companies()->first();
+            $companyMissing = $company === null;
+
+            $query = JobApplication::with(['user', 'resume', 'jobVacancy.company']);
+            if ($company) {
+                $query->whereHas('jobVacancy', function ($vacancy) use ($company) {
+                    return $vacancy->where('company_id', $company->id);
+                });
+            } else {
+                $query->whereRaw('1 = 0');
+            }
+
+            $query->latest();
         }
 
         if ($request->input('archived') === 'true') {
@@ -34,7 +41,7 @@ class JobApplicationController extends Controller
 
         $jobApplicationsPaginated = $query->paginate(10)->onEachSide(1)->appends(request()->query());
 
-        return view('job-applications', compact('jobApplicationsPaginated'));
+        return view('job-applications', compact('jobApplicationsPaginated', 'companyMissing'));
     }
 
     /**
@@ -56,7 +63,7 @@ class JobApplicationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(JobApplication $jobApplication): View
+    public function show(JobApplication $jobApplication): View|RedirectResponse
     {
         $jobApplication->load(['user', 'resume', 'jobVacancy.company']);
 
@@ -70,7 +77,7 @@ class JobApplicationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(JobApplication $jobApplication): View
+    public function edit(JobApplication $jobApplication): View|RedirectResponse
     {
         if (! Gate::allows('go-to-edit-application', [$jobApplication->id])) {
             abort(403);
@@ -112,6 +119,11 @@ class JobApplicationController extends Controller
     public function restore(string $id): RedirectResponse
     {
         $jobApplication = JobApplication::withTrashed()->findOrFail($id);
+
+        if (! Gate::allows('go-to-edit-application', [$jobApplication->id])) {
+            abort(403);
+        }
+
         $jobApplication->restore();
 
         return redirect()

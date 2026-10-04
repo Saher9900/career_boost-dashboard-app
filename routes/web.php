@@ -13,21 +13,32 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware(['auth', 'access_rules:company_owner,admin'])->group(function () {
-    
     Route::get('my-company', [CompanyController::class, 'show'])->name('my-company.show');
-    Route::get('my-company/edit', [CompanyController::class, 'edit'])->name('my-company.edit');
-    Route::put('my-company', [CompanyController::class, 'updateOwned'])->name('my-company.update');
-    Route::get('my-job-vacancies', [JobVacancyController::class, 'index'])->name('my-job-vacancies.index');
-    Route::get('my-job-vacancies/{jobVacancy}/edit', [JobVacancyController::class, 'editVacancyByOwner'])
-        ->name('my-job-vacancies.edit');
-    Route::get('my-job-vacancies/create', [JobVacancyController::class, 'create'])
-        ->name('my-job-vacancies.create');
-    Route::post('my-job-vacancies', [JobVacancyController::class, 'store'])
-        ->name('my-job-vacancies.store');
-    Route::put('my-job-vacancies/{jobVacancy}/update', [JobVacancyController::class, 'updateVacancyByOwner'])
-        ->name('my-job-vacancies.update');
-    Route::resource('job-applications', JobApplicationController::class);
-    Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
+    Route::get('my-company/create', [CompanyController::class, 'createOwned'])->name('my-company.create');
+    Route::post('my-company', [CompanyController::class, 'storeOwned'])->name('my-company.store');
+
+    Route::middleware('company_profile')->group(function () {
+
+        Route::get('my-company/edit', [CompanyController::class, 'edit'])->name('my-company.edit');
+        Route::put('my-company', [CompanyController::class, 'updateOwned'])->name('my-company.update');
+        Route::get('my-job-vacancies', [JobVacancyController::class, 'index'])->name('my-job-vacancies.index');
+        Route::get('my-job-vacancies/{jobVacancy}/edit', [JobVacancyController::class, 'editVacancyByOwner'])
+            ->name('my-job-vacancies.edit');
+        Route::get('my-job-vacancies/create', [JobVacancyController::class, 'create'])
+            ->name('my-job-vacancies.create');
+        Route::post('my-job-vacancies', [JobVacancyController::class, 'store'])
+            ->name('my-job-vacancies.store');
+        Route::put('my-job-vacancies/{jobVacancy}/update', [JobVacancyController::class, 'updateVacancyByOwner'])
+            ->name('my-job-vacancies.update');
+        Route::delete('my-job-vacancies/{jobVacancy}', [JobVacancyController::class, 'destroyOwned'])
+            ->name('my-job-vacancies.destroy');
+        Route::put('my-job-vacancies/{id}/restore', [JobVacancyController::class, 'restoreOwned'])
+            ->name('my-job-vacancies.restore');
+        Route::resource('job-applications', JobApplicationController::class);
+        Route::put('job-application/{id}/restore', [JobApplicationController::class, 'restore'])
+            ->name('job-applications.restore');
+        Route::get('/dashboard', [DashBoardController::class, 'index'])->name('dashboard');
+    });
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -47,7 +58,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::resource('job-vacancies', JobVacancyController::class);
         Route::put('job-category/{id}/restore', [JobCategoryController::class, 'restore'])->name('job-categories.restore');
         Route::put('company/{id}/restore', [CompanyController::class, 'restore'])->name('companies.restore');
-        Route::put('job-application/{id}/restore', [JobApplicationController::class, 'restore'])->name('job-applications.restore');
         Route::put('job-vacancy/{id}/restore', [JobVacancyController::class, 'restore'])->name('job-vacancies.restore');
         Route::put('user/{id}/restore', [UserController::class, 'restore'])->name('users.restore');
     });

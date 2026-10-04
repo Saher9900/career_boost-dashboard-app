@@ -18,13 +18,18 @@ class JobVacancyController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
+        $companyMissing = false;
+
         if (Auth::user()->role === 'admin') {
             $query = JobVacancy::latest();
         } else {
-            $companyId = Company::where('owner_id', Auth::user()->id)->first()->id;
-            $query = JobVacancy::where('company_id', $companyId);
+            $company = Auth::user()->companies()->first();
+            $companyMissing = $company === null;
+            $query = $company
+                ? JobVacancy::where('company_id', $company->id)
+                : JobVacancy::whereRaw('1 = 0');
         }
 
         if ($request->input('archived') === 'true') {
@@ -33,13 +38,13 @@ class JobVacancyController extends Controller
 
         $jobVacanciesPaginated = $query->paginate(10)->onEachSide(1);
 
-        return view('job-vacancies', compact('jobVacanciesPaginated'));
+        return view('job-vacancies', compact('jobVacanciesPaginated', 'companyMissing'));
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create(): View
+    public function create(): View|RedirectResponse
     {
         if (Auth::user()->role === 'admin') {
             $companies = Company::all();
@@ -126,7 +131,29 @@ class JobVacancyController extends Controller
             ->with('success', 'Job vacancy restored successfully.');
     }
 
-    public function editVacancyByOwner(JobVacancy $jobVacancy)
+    public function destroyOwned(JobVacancy $jobVacancy): RedirectResponse
+    {
+        $this->authorize('deleteVacancyByOwner', $jobVacancy);
+
+        $jobVacancy->delete();
+
+        return redirect()->route('my-job-vacancies.index')->with('success', 'Job vacancy archived successfully.');
+    }
+
+    public function restoreOwned(string $id): RedirectResponse
+    {
+        $jobVacancy = JobVacancy::withTrashed()->findOrFail($id);
+
+        $this->authorize('restoreVacancyByOwner', $jobVacancy);
+
+        $jobVacancy->restore();
+
+        return redirect()
+            ->route('my-job-vacancies.index', ['archived' => 'true'])
+            ->with('success', 'Job vacancy restored successfully.');
+    }
+
+    public function editVacancyByOwner(JobVacancy $jobVacancy): View|RedirectResponse
     {
         // $companyId = Company::where('owner_id', Auth::user()->id)->first()->id;
         // $vacanciesOfOwner = JobVacancy::where('company_id', $companyId)

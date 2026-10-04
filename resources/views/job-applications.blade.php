@@ -6,6 +6,14 @@
     </x-slot>
 
     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+        @if ($companyMissing ?? false)
+            <div class="mb-6 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800" role="status">
+                No job applications are shown because your account does not have a company profile yet.
+                <a href="{{ route('my-company.create') }}" class="font-semibold underline">Create your company profile</a>
+                to receive applications.
+            </div>
+        @endif
+
         @if (session('success'))
             <div x-data x-init="setTimeout(() => $el.remove(), 2000)"
                 class="mb-6 bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-center justify-between"

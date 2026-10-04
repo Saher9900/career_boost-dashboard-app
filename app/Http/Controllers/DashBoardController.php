@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Company;
 use App\Models\JobApplication;
 use App\Models\JobVacancy;
 use App\Models\User;
@@ -13,6 +12,7 @@ class DashBoardController extends Controller
     public function index()
     {
         if (Auth::user()->role === 'admin') {
+            $companyMissing = false;
             $activeUsers = User::where('last_login_at', '>=', now()->subDays(30))
                 ->where('role', 'job_seeker')->count();
             $totalJobs = JobVacancy::whereNull('deleted_at')->count();
@@ -30,30 +30,40 @@ class DashBoardController extends Controller
                 ->limit(10)
                 ->get();
         } else {
+            $company = Auth::user()->companies()->first();
+            $companyMissing = $company === null;
 
-            $companyId = Auth::user()->companies()->first()->id;
+            if ($companyMissing) {
+                $analytics = (object) [
+                    'activeUsers' => 0,
+                    'totalJobs' => 0,
+                    'totalApplications' => 0,
+                ];
+                $mostAppliedJobs = collect();
+            } else {
+                $companyId = $company->id;
 
-            $activeUsers = User::where('last_login_at', '>=', now()->subDays(30))
-                ->where('role', 'job_seeker')->whereHas('jobVacancies', function ($vacancy) use ($companyId) {
-                    return $vacancy->where('company_id', $companyId);
-                })->count();
+                $activeUsers = User::where('last_login_at', '>=', now()->subDays(30))
+                    ->where('role', 'job_seeker')->whereHas('jobVacancies', function ($vacancy) use ($companyId) {
+                        return $vacancy->where('company_id', $companyId);
+                    })->count();
 
-            $totalJobs = JobVacancy::where('company_id', $companyId)->count();
+                $totalJobs = JobVacancy::where('company_id', $companyId)->count();
+                $totalApplications = $company->jobApplications()->count();
 
-            $totalApplications = Company::where('id', $companyId)->first()->jobApplications()->count();
+                $analytics = (object) [
+                    'activeUsers' => $activeUsers,
+                    'totalJobs' => $totalJobs,
+                    'totalApplications' => $totalApplications,
+                ];
 
-            $analytics = (object) [
-                'activeUsers' => $activeUsers,
-                'totalJobs' => $totalJobs,
-                'totalApplications' => $totalApplications,
-            ];
-
-            $mostAppliedJobs = JobVacancy::where('company_id', $companyId)
-                ->with('company')
-                ->withCount('jobApplications as total_applications')
-                ->orderByDesc('total_applications')
-                ->limit(10)
-                ->get();
+                $mostAppliedJobs = JobVacancy::where('company_id', $companyId)
+                    ->with('company')
+                    ->withCount('jobApplications as total_applications')
+                    ->orderByDesc('total_applications')
+                    ->limit(10)
+                    ->get();
+            }
         }
 
         $mostAppliedJobs = $mostAppliedJobs->map(function ($job) {
@@ -64,6 +74,6 @@ class DashBoardController extends Controller
             return $job;
         });
 
-        return view('dashboard', compact('analytics', 'mostAppliedJobs'));
+        return view('dashboard', compact('analytics', 'mostAppliedJobs', 'companyMissing'));
     }
 }
