@@ -24,6 +24,16 @@
         <h1 class="text-2xl font-semibold">Career Booster</h1>
     </div>
 
+    @if (auth()->user()->role === 'company_owner')
+        <div class="border-b border-gray-200 px-4 py-4">
+            <p class="truncate text-sm font-semibold text-gray-900">{{ auth()->user()->name }}</p>
+            <p class="mt-1 text-xs text-gray-500">Company owner</p>
+            <a href="{{ route('profile.edit') }}" class="mt-2 inline-flex text-xs font-medium text-[#0e6378] hover:underline">
+                My account
+            </a>
+        </div>
+    @endif
+
     @include('layouts.partials.nav-links', ['items' => $navItems])
 
     <div class="shrink-0 border-t border-gray-200 p-4">
@@ -36,7 +46,12 @@
 
 {{-- Mobile top bar; the sticky wrapper in layouts.app supplies the pinning --}}
 <div class="flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 md:hidden">
-    <span class="text-lg font-semibold">Career Booster</span>
+    <div>
+        <span class="block text-lg font-semibold">Career Booster</span>
+        @if (auth()->user()->role === 'company_owner')
+            <span class="block max-w-56 truncate text-xs text-gray-600">{{ auth()->user()->name }}</span>
+        @endif
+    </div>
 
     <button type="button" id="mobile-nav-toggle" aria-controls="mobile-nav"
         :aria-expanded="mobileNavOpen.toString()" @click="mobileNavOpen = true"
@@ -94,6 +109,16 @@
             </svg>
         </button>
     </div>
+
+    @if (auth()->user()->role === 'company_owner')
+        <div class="border-b border-gray-200 px-4 py-4">
+            <p class="truncate text-sm font-semibold text-gray-900">{{ auth()->user()->name }}</p>
+            <p class="mt-1 text-xs text-gray-500">Company owner</p>
+            <a href="{{ route('profile.edit') }}" class="mt-2 inline-flex text-xs font-medium text-[#0e6378] hover:underline">
+                My account
+            </a>
+        </div>
+    @endif
 
     @include('layouts.partials.nav-links', ['items' => $navItems, 'closeOnNavigate' => true])
 
