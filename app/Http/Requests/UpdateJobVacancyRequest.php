@@ -24,7 +24,7 @@ class UpdateJobVacancyRequest extends FormRequest
     {
         return [
             'title' => ['required', 'string', 'max:255'],
-            'description' => ['required', 'string'],
+            'description' => ['required', 'string', 'max:500'],
             'location' => ['required', 'string', 'max:255'],
             'salary' => ['required', 'string', 'max:255'],
             'type' => ['required', 'in:full_time,contract,remote,hybrid'],

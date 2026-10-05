@@ -107,7 +107,7 @@
                             <td data-label="Title"
                                 class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
                                 <a
-                                    href="{{ route($vacancyDetailRoute, $jobVacancy) }}">{{ $jobVacancy->title }}</a>{{ $jobVacancy->id }}
+                                    href="{{ route($vacancyDetailRoute, $jobVacancy) }}">{{ $jobVacancy->title }}</a>
                             </td>
                             <td data-label="Type"
                                 class="px-6 py-4 text-sm font-medium text-gray-900 md:whitespace-nowrap">
