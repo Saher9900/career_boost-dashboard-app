@@ -43,10 +43,14 @@ class DashBoardController extends Controller
             } else {
                 $companyId = $company->id;
 
-                $activeUsers = User::where('last_login_at', '>=', now()->subDays(30))
-                    ->where('role', 'job_seeker')->whereHas('jobVacancies', function ($vacancy) use ($companyId) {
-                        return $vacancy->where('company_id', $companyId);
-                    })->count();
+                $activeUsers = User::where('role', 'job_seeker')
+                    ->whereHas('jobApplications', function ($application) use ($companyId) {
+                        $application->where('created_at', '>=', now()->subDays(30))
+                            ->whereHas('jobVacancy', function ($vacancy) use ($companyId) {
+                                $vacancy->where('company_id', $companyId);
+                            });
+                    })
+                    ->count();
 
                 $totalJobs = JobVacancy::where('company_id', $companyId)->count();
                 $totalApplications = $company->jobApplications()->count();

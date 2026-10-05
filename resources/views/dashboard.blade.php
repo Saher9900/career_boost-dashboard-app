@@ -32,9 +32,15 @@
 
             <ul class="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
                 <li class="rounded-lg border border-gray-200 border-l-4 border-l-[#138a9e] bg-white p-5 shadow-sm">
-                    <p class="text-sm font-medium text-gray-500">Active users</p>
+                    <p class="text-sm font-medium text-gray-500">{{ auth()->user()->role === 'admin' ? 'Active users' : 'Active candidates' }}</p>
                     <p class="mt-3 text-3xl font-semibold tabular-nums text-gray-900">{{ number_format($analytics->activeUsers) }}</p>
-                    <p class="mt-2 text-xs text-gray-500">Job seekers active in the last 30 days</p>
+                    <p class="mt-2 text-xs text-gray-500">
+                        @if (auth()->user()->role === 'admin')
+                            Job seekers who logged in during the last 30 days
+                        @else
+                            Unique job seekers who applied to your jobs in the last 30 days
+                        @endif
+                    </p>
                 </li>
                 <li class="rounded-lg border border-gray-200 border-l-4 border-l-emerald-600 bg-white p-5 shadow-sm">
                     <p class="text-sm font-medium text-gray-500">Active job posts</p>
