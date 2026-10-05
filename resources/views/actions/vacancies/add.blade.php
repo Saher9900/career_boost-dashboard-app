@@ -32,18 +32,28 @@
                         <x-input-error :messages="$errors->get('title')" class="mt-2" />
                     </div>
 
-                    <div>
-                        <label for="company_id" class="mb-2 block text-sm font-medium text-gray-700">Company</label>
-                        <select id="company_id" name="company_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#138a9e] focus:ring-[#138a9e]" required>
-                            <option value="">Select a company</option>
-                            @foreach ($companies as $company)
-                                <option value="{{ $company->id }}" {{ old('company_id') == $company->id ? 'selected' : '' }}>
-                                    {{ $company->name }}
-                                </option>
-                            @endforeach
-                        </select>
-                        <x-input-error :messages="$errors->get('company_id')" class="mt-2" />
-                    </div>
+                    @if ($isAdmin)
+                        <div>
+                            <label for="company_id" class="mb-2 block text-sm font-medium text-gray-700">Company</label>
+                            <select id="company_id" name="company_id" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#138a9e] focus:ring-[#138a9e]" required>
+                                <option value="">Select a company</option>
+                                @foreach ($companies as $company)
+                                    <option value="{{ $company->id }}" {{ old('company_id') == $company->id ? 'selected' : '' }}>
+                                        {{ $company->name }}
+                                    </option>
+                                @endforeach
+                            </select>
+                            <x-input-error :messages="$errors->get('company_id')" class="mt-2" />
+                        </div>
+                    @else
+                        <div>
+                            <label for="company_id" class="mb-2 block text-sm font-medium text-gray-700">Company</label>
+                            <select id="company_id" disabled
+                                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
+                                <option selected>{{ $ownedCompany->name }}</option>
+                            </select>
+                        </div>
+                    @endif
 
                     <div>
                         <label for="job_category_id" class="mb-2 block text-sm font-medium text-gray-700">Category</label>
@@ -60,7 +70,13 @@
 
                     <div>
                         <label for="location" class="mb-2 block text-sm font-medium text-gray-700">Location</label>
-                        <x-text-input id="location" name="location" type="text" class="mt-1 block w-full" :value="old('location')" placeholder="Cairo, Egypt" required />
+                        @if ($isAdmin)
+                            <x-text-input id="location" name="location" type="text" class="mt-1 block w-full" :value="old('location')" placeholder="Cairo, Egypt" required />
+                        @else
+                            <input id="location" type="text" value="{{ $ownedCompany->address }}" readonly
+                                class="mt-1 block w-full rounded-md border-gray-300 bg-gray-100 shadow-sm">
+                            <p class="mt-1 text-sm text-gray-500">This location is taken from your company profile.</p>
+                        @endif
                         <x-input-error :messages="$errors->get('location')" class="mt-2" />
                     </div>
 

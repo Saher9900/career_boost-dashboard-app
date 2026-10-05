@@ -106,27 +106,33 @@ it('creates vacancies from the company owner route and returns to the owner vaca
     ]);
     $company = Company::factory()->create([
         'owner_id' => $owner->id,
+        'name' => 'Owner Company',
+        'address' => '123 Company Street, Cairo',
     ]);
     $category = JobCategory::factory()->create();
 
     $this->actingAs($owner)
         ->get(route('my-job-vacancies.create'))
         ->assertOk()
-        ->assertSee(route('my-job-vacancies.store'));
+        ->assertSee(route('my-job-vacancies.store'))
+        ->assertSee('Owner Company')
+        ->assertSee('123 Company Street, Cairo');
 
     $this->post(route('my-job-vacancies.store'), [
         'title' => 'Owner Created Vacancy',
         'description' => 'A vacancy created by its company owner.',
-        'location' => 'Cairo',
+        'location' => 'Untrusted submitted location',
         'salary' => '$3000',
         'type' => 'full_time',
-        'company_id' => $company->id,
+        'company_id' => Company::factory()->create()->id,
         'job_category_id' => $category->id,
     ])
         ->assertRedirect(route('my-job-vacancies.index'));
 
-    expect(JobVacancy::where('title', 'Owner Created Vacancy')->firstOrFail()->company_id)
-        ->toBe($company->id);
+    $vacancy = JobVacancy::where('title', 'Owner Created Vacancy')->firstOrFail();
+
+    expect($vacancy->company_id)->toBe($company->id)
+        ->and($vacancy->location)->toBe($company->address);
 });
 
 it('runs the owner update form request and rejects updates to another company vacancy', function () {

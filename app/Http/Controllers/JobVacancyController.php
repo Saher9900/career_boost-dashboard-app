@@ -48,12 +48,14 @@ class JobVacancyController extends Controller
     {
         if (Auth::user()->role === 'admin') {
             $companies = Company::all();
+            $ownedCompany = null;
         } else {
-            $companies = Company::where('owner_id', Auth::user()->id)->get();
+            $ownedCompany = Auth::user()->companies()->firstOrFail();
+            $companies = collect([$ownedCompany]);
         }
         $jobCategories = JobCategory::all();
 
-        return view('actions.vacancies.add', compact('companies', 'jobCategories'));
+        return view('actions.vacancies.add', compact('companies', 'jobCategories', 'ownedCompany'));
     }
 
     /**
@@ -63,13 +65,21 @@ class JobVacancyController extends Controller
     {
         $validated = $request->validated();
 
-        JobVacancy::create($validated);
-
         if (Auth::user()->role === 'admin') {
+            JobVacancy::create($validated);
+
             return redirect()->route('job-vacancies.index');
-        } else {
-            return redirect()->route('my-job-vacancies.index');
         }
+
+        $company = Auth::user()->companies()->firstOrFail();
+
+        JobVacancy::create([
+            ...$validated,
+            'company_id' => $company->id,
+            'location' => $company->address,
+        ]);
+
+        return redirect()->route('my-job-vacancies.index');
     }
 
     /**
