@@ -25,6 +25,11 @@
     </x-slot>
 
     <div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 lg:px-8">
+        @php
+            $contactDetails = $jobApplication->resume?->contact_details;
+            $decodedContactDetails = is_string($contactDetails) ? json_decode($contactDetails, true) : null;
+        @endphp
+
         <div class="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
             <div class="border-b border-gray-200 bg-slate-50 px-6 py-5 sm:px-8">
                 <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
@@ -39,24 +44,39 @@
             </div>
 
             <div class="grid gap-4 p-6 md:grid-cols-2 xl:grid-cols-4 sm:p-8">
-                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div class="min-w-0 rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Vacancy</p>
-                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ $jobApplication->jobVacancy?->title ?? 'N/A' }}</p>
+                    <p class="mt-2 break-words text-lg font-semibold text-gray-900">{{ $jobApplication->jobVacancy?->title ?? 'N/A' }}</p>
                 </div>
 
-                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div class="min-w-0 rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Company</p>
-                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ $jobApplication->jobVacancy?->company?->name ?? 'N/A' }}</p>
+                    <p class="mt-2 break-words text-lg font-semibold text-gray-900">{{ $jobApplication->jobVacancy?->company?->name ?? 'N/A' }}</p>
                 </div>
 
-                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div class="min-w-0 rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">AI Score</p>
                     <p class="mt-2 text-lg font-semibold text-gray-900">{{ $jobApplication->ai_score }}</p>
                 </div>
 
-                <div class="rounded-lg border border-gray-200 bg-gray-50 p-4">
+                <div class="min-w-0 rounded-lg border border-gray-200 bg-gray-50 p-4">
                     <p class="text-xs font-semibold uppercase tracking-[0.2em] text-gray-500">Contact</p>
-                    <p class="mt-2 text-lg font-semibold text-gray-900">{{ $jobApplication->resume?->contact_details ?? 'No contact details' }}</p>
+                    @if (is_array($decodedContactDetails) && count($decodedContactDetails) > 0)
+                        <dl class="mt-2 space-y-1 text-sm text-gray-900">
+                            @foreach ($decodedContactDetails as $label => $value)
+                                @if (is_scalar($value) && (string) $value !== '')
+                                    <div class="min-w-0">
+                                        <dt class="inline font-semibold">{{ ucfirst(str_replace('_', ' ', (string) $label)) }}:</dt>
+                                        <dd class="inline break-all">{{ $value }}</dd>
+                                    </div>
+                                @endif
+                            @endforeach
+                        </dl>
+                    @elseif (is_string($contactDetails) && $contactDetails !== '')
+                        <p class="mt-2 break-words text-sm text-gray-900">{{ $contactDetails }}</p>
+                    @else
+                        <p class="mt-2 text-sm text-gray-900">No contact details</p>
+                    @endif
                 </div>
             </div>
 
