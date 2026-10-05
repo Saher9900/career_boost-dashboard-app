@@ -25,7 +25,7 @@ class AddNewJobVacancyRequest extends FormRequest
         if ($this->user()->role === 'admin') {
             return [
                 'title' => ['required', 'string', 'max:255'],
-                'description' => ['required', 'string'],
+                'description' => ['required', 'string', 'max:500'],
                 'location' => ['required', 'string', 'max:255'],
                 'salary' => ['required', 'string', 'max:255'],
                 'type' => ['required', 'in:full_time,contract,remote,hybrid'],
@@ -35,7 +35,7 @@ class AddNewJobVacancyRequest extends FormRequest
         } else {
             return [
                 'title' => ['required', 'string', 'max:255'],
-                'description' => ['required', 'string'],
+                'description' => ['required', 'string', 'max:500'],
                 'salary' => ['required', 'string', 'max:255'],
                 'type' => ['required', 'in:full_time,contract,remote,hybrid'],
                 'job_category_id' => ['required', 'exists:job_categories,id'],
